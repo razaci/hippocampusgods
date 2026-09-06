@@ -6668,5 +6668,154 @@ const MIND_TRAITS = [{"id": 1, "name": "Fractured Courage", "region": "Hippocamp
 })();
 </script>
 
+
+<script id="mara-vale-loop-fix">
+(function(){
+  const FIXKEY='rescueMeResolvedCriticalSaves_v1';
+
+  function loadResolved(){
+    try{return JSON.parse(localStorage.getItem(FIXKEY)||'[]')}catch(e){return []}
+  }
+  function saveResolved(v){
+    try{localStorage.setItem(FIXKEY,JSON.stringify(v))}catch(e){}
+  }
+
+  function findMara(){
+    if(!window.MIND_CHARACTERS)return null;
+    return MIND_CHARACTERS.find(c=>{
+      const n=(c.name||'').toLowerCase();
+      return n==='mara vale' || n==='mara veil';
+    }) || MIND_CHARACTERS.find(c=>(c.name||'').toLowerCase().startsWith('mara '));
+  }
+
+  function advanceAfterResolved(id){
+    if(window.LIVING_MIND && window.MIND_CHARACTERS){
+      try{
+        LIVING_MIND.lastEvent=null;
+        LIVING_MIND.sceneIndex=(LIVING_MIND.sceneIndex||0)+1;
+
+        const currentIndex=MIND_CHARACTERS.findIndex(c=>c.id===id);
+        let nextIndex=currentIndex>=0 ? currentIndex+1 : (LIVING_MIND.signalTarget||0)+1;
+        if(nextIndex>=MIND_CHARACTERS.length)nextIndex=0;
+        LIVING_MIND.signalTarget=nextIndex;
+
+        LIVING_MIND.decisions=LIVING_MIND.decisions||[];
+        LIVING_MIND.decisions.push({
+          characterId:id,
+          choice:'critical-save-resolved',
+          round:LIVING_MIND.sceneIndex,
+          text:'Critical save resolved. Move to the next signal.'
+        });
+
+        if(Array.isArray(LIVING_MIND.quests)){
+          LIVING_MIND.quests.forEach(q=>{
+            if(q.characterId===id && !q.done) q.done=true;
+          });
+        }
+
+        localStorage.setItem('rescueMeLivingMind_v1',JSON.stringify(LIVING_MIND));
+      }catch(e){}
+    }
+
+    if(window.CHAR_WATCH){
+      try{
+        CHAR_WATCH.critical=null;
+        CHAR_WATCH.ticks=0;
+        if(CHAR_WATCH.stability) CHAR_WATCH.stability[id]=90;
+        localStorage.setItem('rescueMeCharacterWatch_v1',JSON.stringify(CHAR_WATCH));
+      }catch(e){}
+    }
+
+    if(typeof renderLivingMind==='function'){
+      try{renderLivingMind()}catch(e){}
+    }
+  }
+
+  function install(){
+    if(typeof window.performCriticalSave!=='function') return false;
+    const original=window.performCriticalSave;
+    if(original.__maraLoopFixed) return true;
+
+    function fixedCriticalSave(id){
+      const resolved=loadResolved();
+
+      if(resolved.includes(id)){
+        advanceAfterResolved(id);
+        return;
+      }
+
+      original(id);
+
+      const next=loadResolved();
+      if(!next.includes(id)){
+        next.push(id);
+        saveResolved(next);
+      }
+
+      advanceAfterResolved(id);
+    }
+
+    fixedCriticalSave.__maraLoopFixed=true;
+    window.performCriticalSave=fixedCriticalSave;
+    return true;
+  }
+
+  function cleanExistingMaraLoop(){
+    const mara=findMara();
+    if(!mara)return;
+
+    const resolved=loadResolved();
+
+    if(window.LIVING_MIND && Array.isArray(LIVING_MIND.evidence)){
+      const already=LIVING_MIND.evidence.some(e=>{
+        const t=((e.title||'')+' '+(e.text||'')).toLowerCase();
+        return t.includes('critical save') && (t.includes('mara vale')||t.includes('mara veil'));
+      });
+      if(already && !resolved.includes(mara.id)){
+        resolved.push(mara.id);
+        saveResolved(resolved);
+      }
+    }
+
+    if(resolved.includes(mara.id) && window.CHAR_WATCH && CHAR_WATCH.critical===mara.id){
+      CHAR_WATCH.critical=null;
+      CHAR_WATCH.ticks=0;
+      if(CHAR_WATCH.stability) CHAR_WATCH.stability[mara.id]=90;
+      try{localStorage.setItem('rescueMeCharacterWatch_v1',JSON.stringify(CHAR_WATCH))}catch(e){}
+      advanceAfterResolved(mara.id);
+    }
+  }
+
+  function boot(){
+    let tries=0;
+    const timer=setInterval(()=>{
+      tries++;
+      const ok=install();
+      cleanExistingMaraLoop();
+      if(ok || tries>20) clearInterval(timer);
+    },150);
+
+    const obs=new MutationObserver(()=>{
+      const mara=findMara();
+      if(!mara)return;
+      const resolved=loadResolved();
+      if(!resolved.includes(mara.id))return;
+
+      document.querySelectorAll('button').forEach(btn=>{
+        const t=(btn.textContent||'').toUpperCase();
+        if(t.includes('SAVE MARA')){
+          btn.textContent='CONTINUE';
+          btn.onclick=function(){advanceAfterResolved(mara.id)};
+        }
+      });
+    });
+    obs.observe(document.body,{childList:true,subtree:true});
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+  else boot();
+})();
+</script>
+
 </body>
 </html>

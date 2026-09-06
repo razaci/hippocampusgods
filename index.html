@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>HIPPOCAMPUS // Memory Intrusion</title>
+<style>
+:root{
+  --bg:#071014; --panel:#0d1c22; --panel2:#11272c; --text:#e6fbff; --muted:#7aa0a6;
+  --accent:#80f7dd; --accent2:#c59cff; --warn:#ffd27d; --danger:#ff7f94; --line:#1d4950;
+}
+*{box-sizing:border-box} html,body{margin:0;background:radial-gradient(circle at 50% -10%,#17343f 0,#081218 42%,#05090d 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100%}
+body{overflow-x:hidden}
+#noise{position:fixed;inset:0;pointer-events:none;opacity:.11;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+.wrap{max-width:980px;margin:auto;padding:12px 12px 110px}
+.hero{position:relative;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:linear-gradient(145deg,#0f242b,#071115);box-shadow:0 18px 50px #0008}
+.heroArt{height:230px;position:relative;background:
+linear-gradient(180deg,transparent,#061015 96%),
+radial-gradient(circle at 50% 48%,#6dffd6 0 2%,transparent 3%),
+radial-gradient(ellipse at 50% 52%,#214b52 0 13%,transparent 14%),
+radial-gradient(ellipse at 49% 51%,transparent 0 18%,#876bff22 19% 20%,transparent 21%),
+linear-gradient(90deg,#071015,#0c222a 50%,#071015)}
+.brain{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:250px;height:165px;filter:drop-shadow(0 0 22px #80f7dd55)}
+.brain:before,.brain:after{content:"";position:absolute;top:20px;width:128px;height:118px;border:2px solid #78e8d8;border-radius:49% 54% 44% 60%;box-shadow:inset 0 0 30px #63eed722,0 0 13px #63eed744}
+.brain:before{left:9px;transform:rotate(-10deg)} .brain:after{right:9px;transform:scaleX(-1) rotate(-10deg)}
+.hippo{position:absolute;left:76px;top:88px;width:100px;height:34px;border:3px solid #c89cff;border-left-color:transparent;border-radius:52% 48% 60% 38%;transform:rotate(16deg);box-shadow:0 0 18px #b788ff}
+.scanline{position:absolute;left:0;right:0;height:2px;background:#afffe7aa;box-shadow:0 0 10px #afffe7;animation:scan 4s linear infinite}@keyframes scan{from{top:0}to{top:100%}}
+.title{position:absolute;left:18px;bottom:14px}.title b{font-size:26px;letter-spacing:.08em}.title div{font-size:12px;color:#9bc5ca;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px}.stat{background:#08171c;border:1px solid #173c43;padding:10px;border-radius:14px;text-align:center}.stat small{display:block;color:#7799a0;font-size:10px;text-transform:uppercase}.stat strong{font-size:17px}
+.meter{height:7px;background:#071013;border-radius:99px;overflow:hidden;margin-top:7px}.meter i{display:block;height:100%;background:linear-gradient(90deg,#7af5d6,#b995ff);width:50%;transition:.3s}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:12px;margin-top:12px}
+.card{border:1px solid var(--line);background:linear-gradient(180deg,#0c1b20,#091317);border-radius:20px;padding:14px;box-shadow:0 10px 30px #0004}
+.card h2{font-size:15px;margin:0 0 9px;letter-spacing:.08em;text-transform:uppercase}.muted{color:var(--muted);font-size:13px;line-height:1.4}
+#map{height:285px;width:100%;border-radius:15px;background:#071014;border:1px solid #173941;display:block}
+.nodeRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.node{padding:11px 7px;border-radius:13px;border:1px solid #1c4b52;background:#0b2026;color:#bfeae7;font-weight:700;font-size:12px}.node.locked{opacity:.36}.node.active{border-color:#b995ff;box-shadow:0 0 18px #b995ff44}
+#story{min-height:128px;background:#071317;border-radius:14px;padding:12px;border:1px solid #163740;font-size:14px;line-height:1.48}
+.choice{width:100%;margin-top:8px;border:1px solid #2c5a61;background:#10272d;color:white;border-radius:14px;padding:12px;text-align:left;font-weight:650}
+.choice:active{transform:scale(.99)} .choice.good{border-color:#55d7bb}.choice.bad{border-color:#d86a82}
+.console{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#050b0e;border-radius:13px;padding:10px;height:118px;overflow:auto;color:#92d8cd;border:1px solid #173941}
+.puzzle{margin-top:10px}.symbols{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.sym{font-size:20px;padding:12px 4px;border-radius:12px;background:#101e27;border:1px solid #2f4d58;color:#fff}.sym.sel{outline:2px solid #c49cff}
+.actionBar{position:fixed;z-index:10;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(96%,760px);display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:8px;background:#071015e8;border:1px solid #21454b;border-radius:18px;backdrop-filter:blur(16px);box-shadow:0 10px 35px #000b}
+.actionBar button{border:0;border-radius:13px;padding:11px 4px;background:#11282e;color:#d8fbf4;font-weight:800;font-size:11px}.actionBar button.primary{background:linear-gradient(135deg,#65d7c0,#8e76d8);color:#071015}
+.overlay{position:fixed;inset:0;background:#020608ed;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}.modal{max-width:560px;border:1px solid #2a5962;background:linear-gradient(160deg,#0c2026,#070f13);padding:22px;border-radius:24px;box-shadow:0 30px 80px #000}.modal h1{margin:0 0 6px;font-size:29px}.modal p{color:#9ebec2;line-height:1.5}.modal button{width:100%;padding:14px;border:0;border-radius:14px;font-size:15px;font-weight:900;background:linear-gradient(135deg,#75e6ca,#aa8aef);color:#081013}
+.flash{animation:flash .3s}@keyframes flash{50%{filter:brightness(1.8)}}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.heroArt{height:205px}.stats{grid-template-columns:repeat(2,1fr)}.wrap{padding-left:8px;padding-right:8px}.brain{transform:translate(-50%,-50%) scale(.88)}}
+</style>
+</head>
+<body>
+<div id="noise"></div>
+<div id="intro" class="overlay">
+ <div class="modal">
+   <div style="font-size:12px;color:#82c9c0;letter-spacing:.15em">FICTIONAL PSYCHOLOGICAL SCI-FI SIMULATION</div>
+   <h1>HIPPOCAMPUS // MEMORY INTRUSION</h1>
+   <p>You are entering a synthetic mind-lab where memories have become rooms, emotions have become encryption, and the hippocampus behaves like a living archive. This is narrative fiction—not a medical or hacking tool.</p>
+   <p>Your objective: descend through four memory layers, stabilize the signal, identify false recollections, and reach the <b>Origin Vault</b> before the construct rewrites itself.</p>
+   <button onclick="startGame()">ENTER THE MEMORY LAB</button>
+ </div>
+</div>
+
+<div class="wrap">
+ <section class="hero">
+   <div class="heroArt">
+     <div class="brain"><div class="hippo"></div></div><div class="scanline"></div>
+     <div class="title"><b>HIPPOCAMPUS</b><div>MEMORY INTRUSION / SYNTHETIC COGNITION TESTBED</div></div>
+   </div>
+   <div class="stats">
+     <div class="stat"><small>Signal</small><strong id="signal">76%</strong><div class="meter"><i id="signalBar" style="width:76%"></i></div></div>
+     <div class="stat"><small>Coherence</small><strong id="coherence">61%</strong><div class="meter"><i id="cohBar" style="width:61%"></i></div></div>
+     <div class="stat"><small>Stress</small><strong id="stress">24%</strong><div class="meter"><i id="stressBar" style="width:24%"></i></div></div>
+     <div class="stat"><small>Fragments</small><strong id="fragments">0 / 8</strong></div>
+   </div>
+ </section>
+
+ <div class="grid">
+  <section class="card">
+   <h2>Neural Memory Map</h2>
+   <canvas id="map"></canvas>
+   <div class="nodeRow">
+    <button class="node active" data-n="0">1 · Sensory Gate</button>
+    <button class="node locked" data-n="1">2 · Echo Hall</button>
+    <button class="node locked" data-n="2">3 · Conflict Loop</button>
+    <button class="node locked" data-n="3">4 · Dream Index</button>
+    <button class="node locked" data-n="4">5 · Identity Well</button>
+    <button class="node locked" data-n="5">6 · Origin Vault</button>
+   </div>
+  </section>
+
+  <section class="card">
+    <h2>Active Memory Scene</h2>
+    <div id="story">Awaiting neural bridge…</div>
+    <div id="choices"></div>
+  </section>
+
+  <section class="card">
+   <h2>Pattern Decoder</h2>
+   <div class="muted">Reconstruct the active memory-key. Tap the symbols in the order hinted by the scene. Incorrect sequences increase interference.</div>
+   <div class="puzzle">
+    <div class="symbols">
+      <button class="sym" data-s="△">△</button><button class="sym" data-s="○">○</button><button class="sym" data-s="◇">◇</button><button class="sym" data-s="✦">✦</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px"><button class="choice" onclick="submitCode()">SUBMIT SEQUENCE</button><button class="choice" onclick="clearCode()">CLEAR</button></div>
+   </div>
+  </section>
+
+  <section class="card">
+    <h2>Psychological Telemetry</h2>
+    <div class="muted">The game uses fictionalized ideas inspired by memory reconstruction, emotional salience, attention, context, and cognitive conflict. Your choices alter the simulated profile.</div>
+    <div class="console" id="console"></div>
+  </section>
+ </div>
+</div>
+
+<div class="actionBar">
+ <button onclick="scan()">SCAN</button>
+ <button onclick="ground()">STABILIZE</button>
+ <button onclick="probe()">PROBE MEMORY</button>
+ <button class="primary" onclick="advance()">ENTER NODE</button>
+</div>
+
+<script>
+const scenes=[
+ {name:"Sensory Gate", text:"A childhood kitchen appears with impossible detail: rain on glass, a clock ticking too loudly, and a red cup that seems brighter than everything else. The archive asks which detail is most likely carrying emotional salience.", choices:["The red cup","The wall paint","The ceiling height"], correct:0, hint:["○","△"], code:["○","△"]},
+ {name:"Echo Hall", text:"Three voices repeat the same event differently. One is calm, one frightened, one almost blank. The system flags a reconstruction error. Which version should be treated as automatically true?", choices:["The calm one","The frightened one","None automatically"], correct:2, hint:["◇","○","✦"], code:["◇","○","✦"]},
+ {name:"Conflict Loop", text:"A corridor resets every time you choose certainty. The only door that remains is marked: 'AMBIGUITY'. The construct is testing cognitive flexibility.", choices:["Force certainty","Accept uncertainty","Erase the corridor"], correct:1, hint:["△","✦"], code:["△","✦"]},
+ {name:"Dream Index", text:"A memory contains a train station that never existed. The system labels it a composite: pieces from multiple experiences fused into one scene.", choices:["Treat it as literal history","Treat it as symbolic composite","Delete it"], correct:1, hint:["✦","◇","○"], code:["✦","◇","○"]},
+ {name:"Identity Well", text:"The archive displays four versions of 'you' from different periods. None is stable. A line appears: IDENTITY IS A MODEL UPDATED OVER TIME.", choices:["Choose one permanent self","Integrate multiple chapters","Reject all versions"], correct:1, hint:["○","○","◇"], code:["○","○","◇"]},
+ {name:"Origin Vault", text:"The vault opens onto an empty room. The final message: memories are not perfect recordings; they are reconstructions shaped by attention, emotion, context, and later information. The real exploit was learning when not to trust certainty.", choices:["Extract the archive","Stabilize and leave","Rewrite everything"], correct:1, hint:["✦","△","○","◇"], code:["✦","△","○","◇"]}
+];
+let node=0, signal=76, coherence=61, stress=24, fragments=0, selected=[], solved=false, started=false;
+const logEl=document.getElementById('console');
+function log(t){let d=document.createElement('div');d.textContent="> "+t;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight}
+function tone(freq=440,dur=.09){try{const a=new (window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator(),g=a.createGain();o.frequency.value=freq;o.type="sine";g.gain.value=.03;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);o.stop(a.currentTime+dur)}catch(e){}}
+function startGame(){document.getElementById('intro').style.display='none';started=true;renderScene();log("Bridge established.");log("Synthetic hippocampal map online.");draw()}
+function setStats(){signal=Math.max(0,Math.min(100,signal));coherence=Math.max(0,Math.min(100,coherence));stress=Math.max(0,Math.min(100,stress));
+signalEl=document.getElementById('signal');signalEl.textContent=signal+"%";document.getElementById('signalBar').style.width=signal+"%";
+document.getElementById('coherence').textContent=coherence+"%";document.getElementById('cohBar').style.width=coherence+"%";
+document.getElementById('stress').textContent=stress+"%";document.getElementById('stressBar').style.width=stress+"%";
+document.getElementById('fragments').textContent=fragments+" / 8";draw()}
+function renderScene(){
+ const s=scenes[node]; solved=false; selected=[]; updateSyms();
+ document.getElementById('story').innerHTML="<b>"+s.name+"</b><br><br>"+s.text+"<br><br><span style='color:#c5a8ff'>Pattern hint: "+s.hint.join(" → ")+"</span>";
+ const c=document.getElementById('choices');c.innerHTML="";
+ s.choices.forEach((x,i)=>{let b=document.createElement('button');b.className='choice';b.textContent=x;b.onclick=()=>choose(i,b);c.appendChild(b)});
+ document.querySelectorAll('.node').forEach((b,i)=>{b.classList.toggle('active',i===node);b.classList.toggle('locked',i>node)});
+ log("Entered node: "+s.name);
+}
+function choose(i,b){
+ document.querySelectorAll('#choices .choice').forEach(x=>x.disabled=true);
+ if(i===scenes[node].correct){b.classList.add('good');coherence+=8;signal+=4;fragments=Math.min(8,fragments+1);log("Interpretation aligned. Memory fragment recovered.");tone(660)}
+ else{b.classList.add('bad');stress+=9;signal-=7;log("Interpretation conflict detected. Interference rising.");tone(180)}
+ setStats()
+}
+document.querySelectorAll('.sym').forEach(b=>b.onclick=()=>{selected.push(b.dataset.s);b.classList.add('sel');tone(300+selected.length*70)});
+function updateSyms(){document.querySelectorAll('.sym').forEach(b=>b.classList.remove('sel'))}
+function clearCode(){selected=[];updateSyms();log("Pattern buffer cleared.")}
+function submitCode(){
+ const want=scenes[node].code.join(""), got=selected.join("");
+ if(got===want){solved=true;coherence+=10;signal+=8;stress-=4;fragments=Math.min(8,fragments+1);log("Memory-key accepted. Node ready to advance.");tone(880,.16)}
+ else{stress+=8;signal-=6;log("Memory-key rejected. Pattern mismatch.");tone(120,.16)}
+ selected=[];updateSyms();setStats()
+}
+function scan(){signal+=3;stress+=1;log("Wide-band scan complete. Salient objects highlighted.");pulse();setStats()}
+function ground(){stress-=8;coherence+=2;log("Signal stabilized. Noise floor reduced.");tone(520);setStats()}
+function probe(){if(Math.random()>.45){fragments=Math.min(8,fragments+1);coherence+=3;log("Probe recovered a peripheral memory fragment.")}else{stress+=5;log("Probe encountered contradictory recall.")}setStats()}
+function advance(){
+ if(!started)return;
+ if(!solved){log("Advance denied: solve the Pattern Decoder first.");tone(140);return}
+ if(node<scenes.length-1){node++;renderScene();setStats()}
+ else{
+   document.getElementById('story').innerHTML="<b>ARCHIVE EXIT</b><br><br>You reached the Origin Vault and exited with the archive intact. Final insight: memory is powerful precisely because it is adaptive, selective, and reconstructive—not a perfect recording.";
+   document.getElementById('choices').innerHTML="<button class='choice good' onclick='location.reload()'>RESTART INTRUSION</button>";
+   log("Mission complete. Archive stabilized.");tone(990,.3)
+ }
+}
+function pulse(){document.querySelector('.hero').classList.add('flash');setTimeout(()=>document.querySelector('.hero').classList.remove('flash'),300)}
+const canvas=document.getElementById('map'),ctx=canvas.getContext('2d');
+function resize(){const r=canvas.getBoundingClientRect();canvas.width=r.width*devicePixelRatio;canvas.height=r.height*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw()}
+window.addEventListener('resize',resize);
+function draw(){
+ const w=canvas.clientWidth,h=canvas.clientHeight;ctx.clearRect(0,0,w,h);
+ ctx.strokeStyle="#163c43";ctx.lineWidth=1;
+ for(let x=20;x<w;x+=25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+ for(let y=20;y<h;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+ const pts=[];for(let i=0;i<6;i++)pts.push({x:40+(w-80)*i/5,y:h/2+Math.sin(i*1.3)*55});
+ ctx.lineWidth=4;ctx.strokeStyle="#57d9c288";ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
+ pts.forEach((p,i)=>{ctx.beginPath();ctx.arc(p.x,p.y,i===node?13:9,0,Math.PI*2);ctx.fillStyle=i<node?"#75dfca":i===node?"#c39cff":"#18353a";ctx.fill();ctx.strokeStyle="#bfffea";ctx.lineWidth=1;ctx.stroke();ctx.fillStyle="#d9fffa";ctx.font="11px sans-serif";ctx.fillText(String(i+1),p.x-3,p.y+4)})
+ // drifting pulse particles
+ for(let i=0;i<18;i++){let x=(Date.now()/35+i*53)%w,y=h/2+Math.sin(i*2.2+Date.now()/600)*85;ctx.fillStyle="#8ff7df55";ctx.fillRect(x,y,2,2)}
+}
+resize();setInterval(draw,80);
+</script>
+</body>
+</html>

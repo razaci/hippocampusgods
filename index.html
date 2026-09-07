@@ -1,78 +1,254 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#03080d"><title>ASTERION · Deep Sensor Console</title>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#03080d"><title>ASTERION · Elite-Style Command Console</title>
 <style>
-:root{--b:#03080d;--p:#0b1720;--l:#274856;--c:#69e7ff;--g:#ffd86b;--r:#ff7272;--w:#edfaff;--m:#91aab8}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:radial-gradient(circle at 50% 0,#15374a,#050b11 40%,#020508);color:var(--w);font:13px system-ui,-apple-system,sans-serif;padding-bottom:82px}button{font:inherit;color:inherit}
-header{position:sticky;top:0;z-index:20;background:#03080def;border-bottom:1px solid #264654;padding:8px}.brand{display:flex;justify-content:space-between}.brand b{letter-spacing:.12em}.tiny{font-size:8px;color:#86a5b4}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:6px}.s{background:#09141c;border:1px solid #1e3946;border-radius:7px;text-align:center;padding:4px 1px;font-size:7px;color:#88a6b5}.s b{display:block;font-size:11px;color:white}
-main{max-width:900px;margin:auto;padding:7px}.card{background:linear-gradient(#0e1c26,#08131b);border:1px solid #294957;border-radius:15px;padding:10px;margin-bottom:7px}.title{font-size:9px;color:var(--g);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px}.guide{background:#302913;border-color:#806a29;color:#ffe69b}
-.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:7px}.tab{min-height:38px;background:#0a161e;border:1px solid #294856;border-radius:8px;font-size:8px;font-weight:900}.tab.on{background:#123a49;border-color:#34829c}.panel{display:none}.panel.on{display:block}
+:root{--b:#03080d;--p:#0b1720;--l:#274856;--c:#69e7ff;--g:#ffd86b;--r:#ff7272;--w:#edfaff;--m:#91aab8;--gr:#73e2aa}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:radial-gradient(circle at 50% 0,#15374a,#050b11 40%,#020508);color:var(--w);font:13px system-ui,-apple-system,sans-serif;padding-bottom:84px}button{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:#03080def;border-bottom:1px solid #264654;padding:8px}.brand{display:flex;justify-content:space-between;gap:8px}.brand b{letter-spacing:.12em}.tiny{font-size:8px;color:#86a5b4}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:6px}.s{background:#09141c;border:1px solid #1e3946;border-radius:7px;text-align:center;padding:4px 1px;font-size:7px;color:#88a6b5}.s b{display:block;font-size:11px;color:white}
+main{max-width:920px;margin:auto;padding:7px}.card{background:linear-gradient(#0e1c26,#08131b);border:1px solid #294957;border-radius:15px;padding:10px;margin-bottom:7px}.title{font-size:9px;color:var(--g);font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px}.guide{background:#302913;border-color:#806a29;color:#ffe69b}
+.tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:7px}.tab{min-height:38px;background:#0a161e;border:1px solid #294856;border-radius:8px;font-size:7px;font-weight:900}.tab.on{background:#123a49;border-color:#34829c}.panel{display:none}.panel.on{display:block}
 .scopeWrap{display:grid;grid-template-columns:1fr;gap:8px}.scope{position:relative;width:min(94vw,430px);aspect-ratio:1;margin:auto;border-radius:50%;overflow:hidden;border:2px solid #397083;background:radial-gradient(circle,#0e2933 0 2%,#07141c 3% 24%,#102a3444 25% 26%,#07141c 27% 49%,#102a3444 50% 51%,#07141c 52% 74%,#102a3444 75% 76%,#051017 77%);box-shadow:inset 0 0 45px #000,0 0 24px #2ccfff18}
 .scope:before,.scope:after{content:"";position:absolute;background:#3a758344}.scope:before{width:1px;height:100%;left:50%}.scope:after{height:1px;width:100%;top:50%}.sweep{position:absolute;width:50%;height:50%;left:50%;top:0;transform-origin:0 100%;background:linear-gradient(45deg,transparent 45%,#69e7ff2c);animation:spin 4s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-.contact{position:absolute;width:25px;height:25px;border-radius:50%;border:1px solid #68e6ff;background:#153945cc;color:white;font-size:8px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 13px #63e5ff88}.contact.sel{border-color:#ffd86b;box-shadow:0 0 17px #ffd86baa;color:#ffe69c}.contact.hostile{border-color:#ff7373;box-shadow:0 0 17px #ff737399}
-.read{white-space:pre-line;background:#041018;border:1px solid #1e4656;border-radius:10px;padding:9px;color:#a9e8f5;font:10px ui-monospace,SFMono-Regular,monospace;min-height:95px}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.btn{min-height:50px;background:#152a36;border:1px solid #3a5d6c;border-radius:10px;font-weight:900;padding:6px}.btn small{display:block;color:#9ab3c1;font-size:8px;font-weight:500}.btn.c{background:#113946;border-color:#337f98}.btn.g{background:#4c3e17;border-color:#8a7029}.btn.r{background:#412027;border-color:#793e47}
-.contactCard{border:1px solid #2b4c5a;border-radius:11px;padding:8px;margin:5px 0;background:#09151d}.contactCard.on{outline:2px solid #d1b34e}.contactCard b{color:#e9faff}.contactCard small{color:#91aab8}
-.signal{height:60px;display:flex;align-items:center;justify-content:center;gap:3px;background:#041018;border:1px solid #1f4554;border-radius:10px;overflow:hidden}.wave{width:3px;background:#65ddf7;border-radius:2px;animation:pulse 1s ease-in-out infinite alternate}@keyframes pulse{to{height:8px!important}}
-.bar{height:7px;background:#03080c;border-radius:7px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#277e99,#72e8ff)}
+.contact{position:absolute;width:25px;height:25px;border-radius:50%;border:1px solid #68e6ff;background:#153945dd;color:white;font-size:8px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 13px #63e5ff88;transition:left .9s linear,top .9s linear}.contact.sel{border-color:#ffd86b;box-shadow:0 0 17px #ffd86baa;color:#ffe69c}.contact.hostile{border-color:#ff7373;box-shadow:0 0 17px #ff737399;background:#381a1ddd}.contact.dock{border-color:#73e2aa;box-shadow:0 0 17px #73e2aa88}
+.read{white-space:pre-line;background:#041018;border:1px solid #1e4656;border-radius:10px;padding:9px;color:#a9e8f5;font:10px ui-monospace,SFMono-Regular,monospace;min-height:95px}.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.btn{min-height:50px;background:#152a36;border:1px solid #3a5d6c;border-radius:10px;font-weight:900;padding:6px}.btn small{display:block;color:#9ab3c1;font-size:8px;font-weight:500}.btn.c{background:#113946;border-color:#337f98}.btn.g{background:#173829;border-color:#397b5c}.btn.gold{background:#4c3e17;border-color:#8a7029}.btn.r{background:#412027;border-color:#793e47}
+.contactCard{border:1px solid #2b4c5a;border-radius:11px;padding:8px;margin:5px 0;background:#09151d}.contactCard.on{outline:2px solid #d1b34e}.contactCard b{color:#e9faff}.contactCard small{color:#91aab8}.signal{height:60px;display:flex;align-items:center;justify-content:center;gap:3px;background:#041018;border:1px solid #1f4554;border-radius:10px;overflow:hidden}.wave{width:3px;background:#65ddf7;border-radius:2px;animation:pulse 1s ease-in-out infinite alternate}@keyframes pulse{to{height:8px!important}}
+.bar{height:7px;background:#03080c;border-radius:7px;overflow:hidden;margin:4px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#277e99,#72e8ff)}.bar.red i{background:linear-gradient(90deg,#77333a,#ff7373)}.bar.green i{background:linear-gradient(90deg,#245d45,#73e2aa)}
+.deduce{border-left:3px solid #ffd86b;padding:8px;background:#14170d;border-radius:8px;margin-top:6px;color:#ffeab0}.arrival{font-size:56px;text-align:center;padding:12px}.choice{border:1px solid #31505e;border-radius:11px;padding:8px;margin:5px 0;background:#0a1720}
 .bottom{position:fixed;z-index:30;left:0;right:0;bottom:0;display:grid;grid-template-columns:1.2fr 1fr;gap:6px;background:#020609ef;border-top:1px solid #294957;padding:7px 9px calc(7px + env(safe-area-inset-bottom))}.jump,.next{min-height:52px;border-radius:11px;font-weight:1000}.jump{background:#123c4b;border:1px solid #34849d}.next{background:#534217;border:1px solid #96752b;color:#ffecad}.toast{position:fixed;z-index:50;left:50%;bottom:80px;transform:translate(-50%,12px);opacity:0;transition:.2s;width:min(92%,650px);padding:10px;background:#f1d16f;color:#271f0d;border-radius:11px;font-weight:900}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(min-width:720px){.scopeWrap{grid-template-columns:1.05fr .95fr}.actions{grid-template-columns:repeat(3,1fr)}}
+.shadow body,.shadow{background:#010304!important}
+body.shadow{background:radial-gradient(circle at 50% 0,#05090c,#010203 45%,#000)!important}
+body.shadow header{background:#010203f5;border-color:#10191d}
+body.shadow .card{background:linear-gradient(#05090d,#020406);border-color:#18252b}
+body.shadow .scope{filter:brightness(.55) saturate(.55);box-shadow:inset 0 0 70px #000,0 0 12px #071014}
+body.shadow .sweep{opacity:.18}
+body.shadow .contact:not(.hostile){opacity:.7}
+body.shadow .guide{background:#11150e;border-color:#314027;color:#b7d7a5}
+.shadowBadge{display:none;margin-top:5px;padding:5px 8px;border:1px solid #31442f;background:#07100a;border-radius:8px;color:#9ee0a7;font-size:8px;font-weight:900;letter-spacing:.12em}
+body.shadow .shadowBadge{display:inline-block}
+.tri{display:grid;grid-template-columns:1fr;gap:7px}.miniGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.pill{display:inline-block;padding:3px 6px;border:1px solid #355866;border-radius:999px;font-size:8px;color:#a9d7e3;margin:2px}
+.module{border:1px solid #2c4a56;border-radius:10px;padding:7px;background:#08141b;margin:5px 0}.module.dmg{border-color:#7b3e48;background:#221217}
+.marketRow,.missionRow,.mapRow{display:grid;grid-template-columns:1.4fr .7fr .7fr;gap:5px;align-items:center;border-bottom:1px solid #16303a;padding:6px 0}
+.station{background:#0b1921;border:1px solid #2c4e5b;border-radius:12px;padding:8px;margin:6px 0}
+.travelBar{height:10px;background:#03070a;border:1px solid #1e3b47;border-radius:8px;overflow:hidden}.travelBar i{display:block;height:100%;background:linear-gradient(90deg,#1f6377,#6de7ff)}
+@media(min-width:720px){.scopeWrap{grid-template-columns:1.05fr .95fr}.actions{grid-template-columns:repeat(3,1fr)}.tri{grid-template-columns:repeat(3,1fr)}}
 </style></head><body>
-<header><div class="brand"><div><b>ASTERION · SENSOR DECK</b><div class="tiny">TIME SHIP / DEEP RANGE OPERATIONS</div></div><span class="tiny" id="loc">DEEP SPACE</span></div><div class="stats"><div class="s">POWER<b id="power">100%</b></div><div class="s">FUEL<b id="fuel">92%</b></div><div class="s">STABILITY<b id="stab">100%</b></div><div class="s">RANGE<b id="range">4.0 AU</b></div><div class="s">CONTACTS<b id="count">0</b></div><div class="s">TIME<b id="time">17:22</b></div></div></header>
+<header><div class="brand"><div><b>ASTERION · SENSOR DECK</b><div class="tiny">RADAR / APPROACH / TEMPORAL INTERCEPT</div><div class="shadowBadge">◌ SHADOW MODE · EMISSIONS DARK</div></div><span class="tiny" id="loc">DEEP SPACE</span></div><div class="stats"><div class="s">POWER<b id="power">100%</b></div><div class="s">FUEL<b id="fuel">92%</b></div><div class="s">STABILITY<b id="stab">100%</b></div><div class="s">EMISSIONS<b id="emiss">0%</b></div><div class="s">RANGE<b id="range">4.0 AU</b></div><div class="s">TIME<b id="time">17:22</b></div></div></header>
 <main><div class="card guide"><div class="title">Sensor officer</div><b id="guide">Begin with PASSIVE SWEEP. It costs no power and does not reveal your position.</b></div>
-<nav class="tabs"><button class="tab on" data-p="sensors">SENSORS</button><button class="tab" data-p="tracks">TRACKS</button><button class="tab" data-p="comms">COMMS</button><button class="tab" data-p="nav">NAV</button><button class="tab" data-p="core">CORE</button></nav>
+<nav class="tabs" style="grid-template-columns:repeat(4,1fr)"><button class="tab on" data-p="sensors">SENSORS</button><button class="tab" data-p="tracks">TRACKS</button><button class="tab" data-p="comms">COMMS</button><button class="tab" data-p="nav">NAV</button><button class="tab" data-p="local">LOCAL</button><button class="tab" data-p="station">STATION</button><button class="tab" data-p="missions">MISSIONS</button><button class="tab" data-p="core">SHIP</button></nav>
 
-<section class="panel on" id="sensors"><div class="card"><div class="title">Tactical sensor scope</div><div class="scopeWrap"><div class="scope" id="scope"><div class="sweep"></div></div><div><div class="read" id="sensorRead">SENSOR ARRAY STANDBY
+<section class="panel on" id="sensors"><div class="card"><div class="title">Long-range tactical scope</div><div class="scopeWrap"><div class="scope" id="scope"><div class="sweep"></div></div><div><div class="read" id="sensorRead">SENSOR ARRAY STANDBY
 PASSIVE MODE READY
-EMISSION SIGNATURE: ZERO</div><div class="actions" style="margin-top:6px"><button class="btn c" onclick="scan('passive')">📡 PASSIVE SWEEP<small>Free · silent</small></button><button class="btn" onclick="scan('optical')">🔭 OPTICAL<small>Power −2</small></button><button class="btn" onclick="scan('infrared')">🌡 INFRARED<small>Power −3</small></button><button class="btn" onclick="scan('radio')">📻 RADIO<small>Power −2</small></button><button class="btn" onclick="scan('life')">🧬 LIFE SIGNS<small>Power −4</small></button><button class="btn g" onclick="scan('chrono')">⏳ CHRONOMETRIC<small>Power −8 · stability −2</small></button></div></div></div></div></section>
+EMISSION SIGNATURE: ZERO</div><div class="actions" style="margin-top:6px"><button class="btn c" onclick="scan('passive')">📡 PASSIVE SWEEP<small>Free · silent</small></button><button class="btn" onclick="scan('optical')">🔭 OPTICAL<small>Power −2</small></button><button class="btn" onclick="scan('infrared')">🌡 INFRARED<small>Power −3</small></button><button class="btn" onclick="scan('radio')">📻 RADIO<small>Power −2</small></button><button class="btn" onclick="scan('life')">🧬 LIFE SIGNS<small>Power −4</small></button><button class="btn gold" onclick="scan('chrono')">⏳ CHRONOMETRIC<small>Power −8 · emissions +14</small></button></div><div class="deduce" id="deduction">SHIP COMPUTER: No deduction available.</div>
+<div class="tri" style="margin-top:7px">
+<div class="contactCard"><b>POWER PRIORITY</b><div id="powerMode" class="tiny">BALANCED</div><div class="actions" style="margin-top:5px"><button class="btn" onclick="setPower('systems')">SYS</button><button class="btn" onclick="setPower('sensors')">SENS</button><button class="btn" onclick="setPower('drive')">DRV</button></div></div>
+<div class="contactCard"><b>HEAT</b><div class="bar red"><i id="heatbar" style="width:12%"></i></div><small id="heatText">12% · nominal</small></div>
+<div class="contactCard"><b>TRAFFIC</b><div id="trafficText" class="tiny">No local traffic.</div></div>
+</div>
+</div></div></div></section>
 
 <section class="panel" id="tracks"><div class="card"><div class="title">Tracked contacts</div><div id="trackList"></div><div class="actions"><button class="btn c" onclick="focus()">🎯 FOCUS SCAN<small>Resolution +25%</small></button><button class="btn" onclick="track()">◇ TRACK<small>Maintain solution</small></button><button class="btn r" onclick="dropTrack()">× DROP TRACK<small>Clear selected contact</small></button></div></div></section>
 
 <section class="panel" id="comms"><div class="card"><div class="title">Signal interception</div><div class="signal" id="wave"></div><div class="read" id="commsRead">NO CARRIER LOCK
 Select a contact and perform RADIO analysis.</div><div class="actions" style="margin-top:6px"><button class="btn" onclick="tune(-1)">− FREQUENCY<small>Fine tune down</small></button><button class="btn" onclick="tune(1)">+ FREQUENCY<small>Fine tune up</small></button><button class="btn c" onclick="decode()">⌁ FILTER / DECODE<small>Resolve intercepted signal</small></button></div></div></section>
 
-<section class="panel" id="nav"><div class="card"><div class="title">Navigation solution</div><div class="read" id="navRead">NO INTERCEPT SOLUTION</div><div class="actions" style="margin-top:6px"><button class="btn g" onclick="compute()">✦ COMPUTE INTERCEPT<small>Requires identified contact</small></button><button class="btn c" onclick="plot()">🗺 PLOT COURSE<small>Arm chrono trajectory</small></button><button class="btn r" onclick="abort()">⛔ ABORT<small>Clear solution</small></button></div></div></section>
+<section class="panel" id="nav"><div class="card"><div class="title">Navigation solution</div><div class="read" id="navRead">NO INTERCEPT SOLUTION</div><div class="contactCard" style="margin-top:6px"><b>SUPERCRUISE / TEMPORAL TRANSIT</b><div class="travelBar"><i id="travelbar" style="width:0%"></i></div><small id="travelText">No active transit.</small></div><div class="actions" style="margin-top:6px"><button class="btn gold" onclick="compute()">✦ COMPUTE INTERCEPT<small>Locks identified target</small></button><button class="btn c" onclick="plot()">🗺 PLOT COURSE<small>Auto-computes if needed</small></button><button class="btn r" onclick="abort()">⛔ ABORT<small>Clear solution</small></button></div></div></section>
 
-<section class="panel" id="core"><div class="card"><div class="title">Ship core</div><div class="contactCard"><b>Chrono Drive</b><div class="bar"><i id="pbar" style="width:100%"></i></div><small>High-energy temporal translation system.</small></div><div class="contactCard"><b>Temporal Hull</b><div class="bar"><i id="sbar" style="width:100%"></i></div><small>Protects Asterion from causal shear.</small></div><div class="actions"><button class="btn c" onclick="charge()">⚡ CHARGE<small>Fuel −4 / power +20</small></button><button class="btn" onclick="stabilize()">🌀 STABILIZE<small>Power −6 / stability +12</small></button><button class="btn" onclick="save()">💾 SAVE<small>Store voyage</small></button><button class="btn r" onclick="resetGame()">⟳ RESET<small>New sensor mission</small></button></div></div><div class="card"><div class="title">Operations log</div><div class="read" id="log">ASTERION SENSOR DECK ONLINE</div></div></section>
+<section class="panel" id="local"><div class="card"><div class="title">Close-range operations</div><div class="arrival" id="localArt">🌌</div><div class="read" id="localRead">NO LOCAL CONTACT.
+Execute an intercept to enter approach range.</div><div class="actions" style="margin-top:6px"><button class="btn c" onclick="approach()">➜ APPROACH<small>Close range</small></button><button class="btn" onclick="hail()">📞 HAIL<small>Attempt contact</small></button><button class="btn g" onclick="dock()">⚓ DOCK / LAND<small>Requires close range</small></button><button class="btn gold" onclick="investigate()">🔎 INVESTIGATE<small>Run local mission</small></button><button class="btn" onclick="depart()">↩ DEPART<small>Return to long range</small></button></div><div id="localChoices"></div></div></section>
+
+
+<section class="panel" id="station"><div class="card"><div class="title">Station services</div><div id="stationRead" class="read">NO STATION DOCKED.
+Dock at a station-class contact to access services.</div><div class="actions" style="margin-top:6px"><button class="btn c" onclick="stationService('refuel')">⛽ REFUEL<small>Restore fuel</small></button><button class="btn" onclick="stationService('repair')">🔧 REPAIR<small>Repair modules and hull</small></button><button class="btn" onclick="stationService('market')">📦 MARKET<small>Trade cargo</small></button><button class="btn gold" onclick="stationService('carto')">🗺 CARTOGRAPHICS<small>Sell exploration data</small></button></div><div id="marketBox"></div></div></section>
+
+<section class="panel" id="missions"><div class="card"><div class="title">Mission board</div><div id="missionBoard"></div></div><div class="card"><div class="title">Sector map</div><div id="sectorMap"></div></div><div class="card"><div class="title">Reputation</div><div id="repBox"></div></div></section>
+
+<section class="panel" id="core"><div class="card"><div class="title">Ship core</div><div class="contactCard"><b>Chrono Drive</b><div class="bar"><i id="pbar" style="width:100%"></i></div><small>High-energy temporal translation system.</small></div><div class="contactCard"><b>Temporal Hull</b><div class="bar green"><i id="sbar" style="width:100%"></i></div><small>Protects Asterion from causal shear.</small></div><div class="contactCard"><b>Emission Signature</b><div class="bar red"><i id="ebar" style="width:0%"></i></div><small>High active emissions may attract NULL POST.</small></div><div class="actions"><button class="btn c" onclick="charge()">⚡ CHARGE<small>Fuel −4 / power +20</small></button><button class="btn" onclick="stabilize()">🌀 STABILIZE<small>Power −6 / stability +12</small></button><button class="btn" onclick="silent()">◌ GO DARK<small>Enter full shadow mode</small></button><button class="btn gold" onclick="breakSilence()">☀ BREAK SILENCE<small>Restore active systems</small></button><button class="btn" onclick="save()">💾 SAVE<small>Store voyage</small></button><button class="btn r" onclick="resetGame()">⟳ RESET<small>New sensor mission</small></button></div></div><div class="card"><div class="title">Modules / cargo</div><div id="moduleBox"></div><div class="title" style="margin-top:8px">Cargo hold</div><div id="cargoBox"></div></div>
+<div class="card"><div class="title">Operations log</div><div class="read" id="log">ASTERION SENSOR DECK ONLINE</div></div></section>
 </main><div class="toast" id="toast"></div><div class="bottom"><button class="jump" onclick="jump()">🚀 EXECUTE INTERCEPT</button><button class="next" onclick="next()">➜ NEXT ACTION</button></div>
+
 <script>
-const BASE={power:100,fuel:92,stab:100,mins:1042,passive:false,selected:null,computed:false,plotted:false,freq:0,contacts:[],location:'DEEP SPACE',log:['ASTERION SENSOR DECK ONLINE']};
+const BASE={power:100,fuel:92,stab:100,emiss:0,mins:1042,passive:false,selected:null,computed:false,plotted:false,freq:0,contacts:[],location:'DEEP SPACE',localStage:0,localContact:null,docked:false,missionDone:{},shadow:false,shadowTicks:0,heat:12,powerMode:'balanced',credits:850,cargo:{'Medical Supplies':2,'Relay Mail':1},cargoCap:8,modules:{Sensors:100,Drive:100,Hull:100,Comms:100,Medbay:100},rep:{Verona:0,Rescue:0,Archive:0},missions:[],activeMission:null,systemsDiscovered:['Verona Sector'],explorationData:0,travel:null,traffic:[],log:['ASTERION SENSOR DECK ONLINE']};
 let S=JSON.parse(JSON.stringify(BASE));
 const defs=[
-{id:'T01',x:66,y:26,name:'UNKNOWN CONTACT T-01',real:'Verona Clinic',epoch:'2026',type:'STRUCTURE',life:'1 EQUINE / 4 HUMAN',radio:'MEDICAL NETWORK + ANOMALOUS CARRIER',opt:'PLANETARY STRUCTURE · ARTIFICIAL LIGHT',ir:'WARM STRUCTURE / BIOLOGICAL HEAT',chrono:'CHRONAL ECHO: −139 YEARS / +215 YEARS',signal:'...VERONA... STALL SIX... DRAWER SIX...',range:'1.8 temporal AU'},
-{id:'T02',x:27,y:63,name:'UNKNOWN CONTACT T-02',real:'Verona Relay Station',epoch:'1887',type:'WOOD / IRON / BIOLOGICAL',life:'4 HUMAN / 2 EQUINE',radio:'MORSE-LIKE ELECTRICAL IMPULSES',opt:'SMALL SETTLEMENT / STABLE / POST ROAD',ir:'6 WARM BIOLOGICAL SOURCES',chrono:'DISPLACEMENT: −139.2 YEARS',signal:'...RIDER TWELVE... NORTH ROAD... DO NOT...',range:'2.7 temporal AU'},
-{id:'T03',x:75,y:72,name:'UNKNOWN CONTACT T-03',real:'Verona Temporal Archive',epoch:'2241',type:'ORBITAL ARTIFICIAL MASS',life:'17 BIOLOGICAL / 3 UNCERTAIN',radio:'QUANTUM-BAND ARCHIVE BURST',opt:'ORBITAL RING / DOCKING STRUCTURE',ir:'CONTROLLED THERMAL GRID',chrono:'DISPLACEMENT: +215 YEARS',signal:'...RECORD J-6... CAUSALITY FAILURE...',range:'3.4 temporal AU'},
-{id:'X00',x:42,y:35,name:'UNKNOWN CONTACT X-00',real:'NULL POST INTERCEPT',epoch:'UNKNOWN',type:'NO CONSISTENT MASS',life:'SIGNATURES APPEAR / VANISH',radio:'IMPOSSIBLE RETURN CARRIER',opt:'NO OPTICAL OBJECT',ir:'NEGATIVE THERMAL CONTRAST',chrono:'MULTIPLE EPOCHS SIMULTANEOUS',signal:'...YOU SHOULD NOT HAVE SCANNED...',range:'3.9 temporal AU'}
+{id:'T01',x:66,y:26,dx:.18,dy:.09,name:'UNKNOWN CONTACT T-01',real:'Verona Clinic',epoch:'2026',type:'STRUCTURE',life:'1 EQUINE / 4 HUMAN',radio:'MEDICAL NETWORK + ANOMALOUS CARRIER',opt:'PLANETARY STRUCTURE · ARTIFICIAL LIGHT',ir:'WARM STRUCTURE / BIOLOGICAL HEAT',chrono:'CHRONAL ECHO: −139 YEARS / +215 YEARS',signal:'...VERONA... STALL SIX... DRAWER SIX...',range:'1.8 temporal AU',art:'🏥🐎',local:'A low medical complex sits beneath a chronometric shimmer. One stable wing is radiating impossible 1887 signatures.',mission:'Examine the stable anomaly and secure the impossible veterinary record.'},
+{id:'T02',x:27,y:63,dx:-.14,dy:.11,name:'UNKNOWN CONTACT T-02',real:'Verona Relay Station',epoch:'1887',type:'WOOD / IRON / BIOLOGICAL',life:'4 HUMAN / 2 EQUINE',radio:'MORSE-LIKE ELECTRICAL IMPULSES',opt:'SMALL SETTLEMENT / STABLE / POST ROAD',ir:'6 WARM BIOLOGICAL SOURCES',chrono:'DISPLACEMENT: −139.2 YEARS',signal:'...RIDER TWELVE... NORTH ROAD... DO NOT...',range:'2.7 temporal AU',art:'🏚️📯',local:'Dust, lanterns and horses fill the relay yard. Rider Twelve is preparing to leave before a storm closes North Road.',mission:'Inspect Rider Twelve’s packet and determine whether to alter the route.'},
+{id:'T03',x:75,y:72,dx:.12,dy:-.13,name:'UNKNOWN CONTACT T-03',real:'Verona Temporal Archive',epoch:'2241',type:'ORBITAL ARTIFICIAL MASS',life:'17 BIOLOGICAL / 3 UNCERTAIN',radio:'QUANTUM-BAND ARCHIVE BURST',opt:'ORBITAL RING / DOCKING STRUCTURE',ir:'CONTROLLED THERMAL GRID',chrono:'DISPLACEMENT: +215 YEARS',signal:'...RECORD J-6... CAUSALITY FAILURE...',range:'3.4 temporal AU',art:'🧬🛰️',local:'A future archive ring rotates above a blue world. Its animal-history wing is blinking red around record J-6.',mission:'Enter the animal archive and trace record J-6 to its missing historical branch.'},
+{id:'X00',x:42,y:35,dx:.3,dy:.22,name:'UNKNOWN CONTACT X-00',real:'NULL POST INTERCEPT',epoch:'UNKNOWN',type:'NO CONSISTENT MASS',life:'SIGNATURES APPEAR / VANISH',radio:'IMPOSSIBLE RETURN CARRIER',opt:'NO OPTICAL OBJECT',ir:'NEGATIVE THERMAL CONTRAST',chrono:'MULTIPLE EPOCHS SIMULTANEOUS',signal:'...YOU SHOULD NOT HAVE SCANNED...',range:'3.9 temporal AU',art:'⬛📨',local:'There is no visible object—only a black seam in the stars and thousands of undelivered messages whispering through the hull.',mission:'Board the impossible mail corridor and recover one erased Verona letter before the seam closes.'}
 ];
-function $(x){return document.getElementById(x)}function fmt(m){return String(Math.floor((m%1440)/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}function toast(t){let x=$('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2100)}function addlog(t){S.log.unshift(fmt(S.mins)+' · '+t);S.log=S.log.slice(0,14)}
-function go(p){document.querySelectorAll('.panel,.tab').forEach(x=>x.classList.remove('on'));$(p).classList.add('on');document.querySelector(`[data-p="${p}"]`).classList.add('on')}document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>go(b.dataset.p));
-function get(id){return S.contacts.find(x=>x.id===id)}function def(id){return defs.find(x=>x.id===id)}
-function scan(mode){
- let costs={passive:0,optical:2,infrared:3,radio:2,life:4,chrono:8},c=costs[mode];if(S.power<c){toast('INSUFFICIENT SENSOR POWER');return}S.power-=c;S.mins+=2;
- if(mode==='passive'&&!S.passive){S.passive=true;defs.slice(0,3).forEach((d,i)=>S.contacts.push({id:d.id,res:12+i*4,modes:['passive'],tracked:false}));$('sensorRead').textContent='PASSIVE SWEEP COMPLETE\\n3 CONTACTS DETECTED\\nNO ACTIVE EMISSIONS TRANSMITTED';toast('3 faint contacts detected.');addlog('Passive sweep found three unknown contacts.')}
- else if(mode==='passive'){toast('Passive tracks refreshed.')}
- else{if(!S.selected){toast('Select a contact on the scope first.');S.power+=c;return}let q=get(S.selected);if(!q.modes.includes(mode))q.modes.push(mode);q.res=Math.min(100,q.res+(mode==='chrono'?32:18));let d=def(q.id),text=mode.toUpperCase()+' ANALYSIS · '+q.id+'\\n';text+=mode==='optical'?d.opt:mode==='infrared'?d.ir:mode==='radio'?d.radio:mode==='life'?d.life:d.chrono;$('sensorRead').textContent=text+'\\nRESOLUTION: '+q.res+'%';if(mode==='chrono'){S.stab=Math.max(0,S.stab-2);if(q.id==='T03'&&!get('X00')){S.contacts.push({id:'X00',res:9,modes:['passive'],tracked:false});toast('WARNING · fourth contact appeared during chronometric pulse.');addlog('Active chronometric pulse revealed contact X-00.')}}if(mode==='radio')toast('Carrier data transferred to COMMS.');else toast(mode.toUpperCase()+' scan complete.');}
+
+const npcNames=['Mercy Runner','Atlas Surveyor','North Pass Courier','Juno Salvager','Verona Rescue One','Blackwater Trader','Archive Tender'];
+const missionTypes=[
+ {name:'Rescue Beacon',faction:'Rescue',pay:420,text:'Locate a damaged transport and stabilize survivors.'},
+ {name:'Dead Letter Courier',faction:'Verona',pay:360,text:'Carry relay mail across an unstable temporal corridor.'},
+ {name:'Archive Recovery',faction:'Archive',pay:510,text:'Recover missing historical data from a drifting probe.'}
+];
+function ensureMissions(){if(!S.missions.length)S.missions=missionTypes.map((m,i)=>({...m,id:'M'+(i+1),accepted:false,done:false}))}
+function cargoCount(){return Object.values(S.cargo).reduce((a,b)=>a+b,0)}
+function setPower(m){S.powerMode=m;toast('POWER PRIORITY · '+m.toUpperCase());addlog('Power distribution set to '+m+'.');refresh();save()}
+function spawnTraffic(){
+ if(S.shadow)return;
+ if(S.traffic.length<3 && Math.random()<.35){
+   S.traffic.push({name:npcNames[Math.floor(Math.random()*npcNames.length)],range:(0.4+Math.random()*3.2).toFixed(1)+' AU',state:['cruising','scanning','broadcasting','departing'][Math.floor(Math.random()*4)]});
+   S.traffic=S.traffic.slice(-4)
+ }
+}
+function damageRandom(){
+ let keys=Object.keys(S.modules),k=keys[Math.floor(Math.random()*keys.length)];
+ S.modules[k]=Math.max(35,S.modules[k]-Math.floor(8+Math.random()*15));
+ addlog(k+' module took transient damage.');
+}
+function acceptMission(id){let m=S.missions.find(x=>x.id===id);if(!m)return;m.accepted=true;S.activeMission=id;toast('MISSION ACCEPTED · '+m.name);addlog('Accepted '+m.name+'.');refresh();save()}
+function completeMission(){
+ let m=S.missions.find(x=>x.id===S.activeMission);if(!m||m.done)return;
+ m.done=true;S.credits+=m.pay;S.rep[m.faction]=(S.rep[m.faction]||0)+2;toast('MISSION COMPLETE · +'+m.pay+' CR');addlog('Completed '+m.name+'.');S.activeMission=null;refresh();save()
+}
+function stationService(x){
+ if(!S.docked){toast('Dock at a station first.');return}
+ if(x==='refuel'){let cost=Math.max(0,Math.round((100-S.fuel)*2));if(S.credits<cost){toast('Insufficient credits.');return}S.credits-=cost;S.fuel=100;toast('Fuel restored.')}
+ if(x==='repair'){let cost=120;if(S.credits<cost){toast('Insufficient credits.');return}S.credits-=cost;Object.keys(S.modules).forEach(k=>S.modules[k]=100);S.stab=100;toast('Ship repaired.')}
+ if(x==='carto'){let pay=S.explorationData*90;if(!pay){toast('No unsold exploration data.');return}S.credits+=pay;S.explorationData=0;toast('Exploration data sold for '+pay+' CR.')}
+ if(x==='market'){let price=80;if(S.credits>=price&&cargoCount()<S.cargoCap){S.credits-=price;S.cargo['Medical Supplies']=(S.cargo['Medical Supplies']||0)+1;toast('Bought Medical Supplies.')}else toast('Need 80 CR and free cargo space.')}
  refresh();save()
 }
+function $(x){return document.getElementById(x)}function fmt(m){return String(Math.floor((m%1440)/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}function toast(t){let x=$('toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),2100)}function addlog(t){S.log.unshift(fmt(S.mins)+' · '+t);S.log=S.log.slice(0,16)}function go(p){document.querySelectorAll('.panel,.tab').forEach(x=>x.classList.remove('on'));$(p).classList.add('on');document.querySelector(`[data-p="${p}"]`).classList.add('on')}document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>go(b.dataset.p));
+function get(id){return S.contacts.find(x=>x.id===id)}function def(id){return defs.find(x=>x.id===id)}
+function scan(mode){
+ if(S.shadow && mode!=='passive'){
+   toast('SHADOW MODE · active sensors are dark. Break silence to transmit.');
+   addlog('Active sensor request suppressed while running dark.');
+   return
+ }
+ let costs={passive:0,optical:2,infrared:3,radio:2,life:4,chrono:8},c=costs[mode];if(S.power<c){toast('INSUFFICIENT SENSOR POWER');return}
+ if(mode!=='passive'){
+   let mod=S.powerMode==='sensors'?.75:S.powerMode==='drive'?1.2:1;
+   c=Math.max(1,Math.round(c*mod));S.power-=c;
+   S.emiss=Math.min(100,S.emiss+(mode==='chrono'?14:mode==='life'?6:3));
+   S.heat=Math.min(100,S.heat+(mode==='chrono'?14:5));
+ }S.mins+=2;
+ if(mode==='passive'&&!S.passive){S.passive=true;defs.slice(0,3).forEach((d,i)=>S.contacts.push({id:d.id,res:12+i*4,modes:['passive'],tracked:false,x:d.x,y:d.y}));$('sensorRead').textContent='PASSIVE SWEEP COMPLETE\\n3 CONTACTS DETECTED\\nNO ACTIVE EMISSIONS TRANSMITTED';toast('3 faint contacts detected.');addlog('Passive sweep found three unknown contacts.')}
+ else if(mode==='passive'){toast('Passive tracks refreshed.')}
+ else{if(!S.selected){toast('Select a contact on the scope first.');S.power+=c;return}let q=get(S.selected);if(!q.modes.includes(mode))q.modes.push(mode);q.res=Math.min(100,q.res+(mode==='chrono'?32:18));let d=def(q.id),text=mode.toUpperCase()+' ANALYSIS · '+q.id+'\\n';text+=mode==='optical'?d.opt:mode==='infrared'?d.ir:mode==='radio'?d.radio:mode==='life'?d.life:d.chrono;$('sensorRead').textContent=text+'\\nRESOLUTION: '+q.res+'%';if(mode==='chrono'){S.stab=Math.max(0,S.stab-2);if(S.emiss>=35&&!get('X00')){S.contacts.push({id:'X00',res:9,modes:['passive'],tracked:false,x:def('X00').x,y:def('X00').y});toast('WARNING · fourth contact appeared during chronometric pulse.');addlog('Active chronometric pulse revealed contact X-00.')}}if(mode==='radio')toast('Carrier data transferred to COMMS.');else toast(mode.toUpperCase()+' scan complete.');}
+ dangerTick();refresh();save()
+}
+function dangerTick(){
+ if(S.shadow){
+   S.shadowTicks++;
+   S.emiss=Math.max(0,S.emiss-9);S.heat=Math.max(3,S.heat-5);
+   let q=get('X00');
+   if(q){
+     q.x+=(8-q.x)*.12;
+     q.y+=(90-q.y)*.12;
+     q.res=Math.max(4,q.res-4);
+     if(S.shadowTicks===2)toast('NULL POST is losing your trail...');
+     if(S.emiss===0 && S.shadowTicks>=4){
+       S.contacts=S.contacts.filter(c=>c.id!=='X00');
+       if(S.selected==='X00')S.selected=null;
+       toast('THREAT LOST · Asterion is hidden in the shadows.');
+       addlog('NULL POST lost sensor contact with Asterion.');
+     }
+   }
+   return
+ }
+ if(S.emiss>55&&get('X00')){
+   let q=get('X00');q.res=Math.min(100,q.res+3);
+   q.x+=(50-q.x)*.05;q.y+=(50-q.y)*.05;
+   if(Math.random()<.3)toast('NULL POST contact changed course toward Asterion.');
+ }
+}
 function select(id){S.selected=id;let q=get(id),d=def(id);$('sensorRead').textContent=`SELECTED ${id}\\nRANGE: ${d.range}\\nRESOLUTION: ${q.res}%\\nIDENTITY: ${q.res>=70?d.real+' · '+d.epoch:'UNRESOLVED'}`;refresh()}
-function focus(){if(!S.selected){toast('Select a contact first.');return}if(S.power<6){toast('Focus scan requires 6% power.');return}S.power-=6;let q=get(S.selected);q.res=Math.min(100,q.res+25);S.mins+=3;if(q.res>=70)toast('CONTACT IDENTIFIED · '+def(q.id).real);else toast('Resolution increased to '+q.res+'%.');addlog('Focused sensor aperture on '+q.id+'.');refresh();save()}
+function focus(){if(!S.selected){toast('Select a contact first.');return}if(S.power<6){toast('Focus scan requires 6% power.');return}S.power-=6;S.emiss=Math.min(100,S.emiss+7);S.heat=Math.min(100,S.heat+8);let q=get(S.selected);q.res=Math.min(100,q.res+25);S.mins+=3;if(q.res>=70)toast('CONTACT IDENTIFIED · '+def(q.id).real);else toast('Resolution increased to '+q.res+'%.');addlog('Focused sensor aperture on '+q.id+'.');dangerTick();refresh();save()}
 function track(){if(!S.selected){toast('Select a contact first.');return}get(S.selected).tracked=true;toast('TRACK LOCKED · '+S.selected);refresh()}
 function dropTrack(){if(!S.selected)return;get(S.selected).tracked=false;S.selected=null;S.computed=false;S.plotted=false;toast('Track released.');refresh()}
 function tune(n){S.freq+=n;toast('Receiver offset '+(S.freq>=0?'+':'')+S.freq+'.');refresh()}
 function decode(){if(!S.selected||!get(S.selected).modes.includes('radio')){toast('Perform RADIO analysis on a selected contact first.');return}let d=def(S.selected),q=get(S.selected);q.res=Math.min(100,q.res+12);$('commsRead').textContent='CARRIER LOCK · '+S.selected+'\\nFILTER OFFSET '+S.freq+'\\nDECODE:\\n'+d.signal;toast('Signal fragment decoded.');addlog('Decoded carrier from '+S.selected+'.');refresh();save()}
-function compute(){if(!S.selected||get(S.selected).res<70){toast('Contact identification must reach 70%.');return}S.computed=true;S.plotted=false;toast('Intercept solution computed.');addlog('Navigation solved '+S.selected+' temporal vector.');refresh()}
-function plot(){if(!S.computed){toast('Compute an intercept first.');return}S.plotted=true;toast('CHRONO TRAJECTORY ARMED');refresh()}
+function compute(){if(S.shadow){toast('SHADOW MODE · navigation transmitter is dark. Break silence first.');return}if(!S.selected){toast('Select a contact first.');go('sensors');return}let q=get(S.selected);if(!q){toast('Selected contact was lost. Reacquire it on sensors.');S.selected=null;refresh();return}if(q.res<70){toast('Contact identification must reach 70%. Current resolution '+q.res+'%.');go('sensors');return}q.tracked=true;S.computed=true;S.plotted=false;toast('INTERCEPT SOLUTION COMPUTED · '+def(S.selected).real);addlog('Navigation solved '+S.selected+' temporal vector.');refresh();save()}
+function plot(){if(S.shadow){toast('SHADOW MODE · course plotting transmitters are offline. Break silence first.');return}if(!S.selected){toast('No navigation contact selected.');go('sensors');return}let q=get(S.selected);if(!q){toast('Contact track unavailable. Reacquire target.');S.selected=null;S.computed=false;refresh();return}if(q.res<70){toast('Target is not identified yet. Raise resolution to 70%.');go('sensors');return}if(!S.computed){q.tracked=true;S.computed=true;addlog('Navigation auto-computed intercept for '+S.selected+'.')}S.plotted=true;toast('COURSE PLOTTED · CHRONO TRAJECTORY ARMED');addlog('Course plotted to '+def(S.selected).real+'.');refresh();save()}
 function abort(){S.computed=false;S.plotted=false;toast('Navigation solution cleared.');refresh()}
-function jump(){if(!S.plotted||!S.selected){toast('Identify → compute intercept → plot course first.');return}if(S.power<20||S.fuel<10){toast('Jump requires 20% power and 10% fuel.');return}let d=def(S.selected);S.power-=15;S.fuel-=10;S.stab=Math.max(0,S.stab-3);S.location=d.real+' · '+d.epoch;S.mins+=7;S.plotted=false;toast('INTERCEPT COMPLETE · '+S.location);addlog('Asterion arrived at '+S.location+'.');refresh();save()}
+function jump(){
+ if(S.shadow){toast('SHADOW MODE · chrono drive beacon is suppressed. Break silence to jump.');return}
+ if(S.travel){toast('Transit already in progress.');return}
+ if(!S.selected){toast('Select an identified contact first.');go('sensors');return}
+ let q=get(S.selected);if(!q||q.res<70){toast('Target must be identified before intercept.');go('sensors');return}
+ if(!S.computed){S.computed=true;q.tracked=true;addlog('Failsafe auto-computed intercept solution.')}
+ if(!S.plotted){S.plotted=true;addlog('Failsafe auto-plotted chrono trajectory.');toast('COURSE AUTO-PLOTTED · tap EXECUTE INTERCEPT again.');refresh();save();return}
+ if(S.power<20||S.fuel<10){toast('Jump requires 20% power and 10% fuel.');go('core');return}
+ let d=def(S.selected);
+ S.power-=S.powerMode==='drive'?10:15;S.fuel-=10;S.heat=Math.min(100,S.heat+18);S.stab=Math.max(0,S.stab-3);
+ S.travel={id:S.selected,progress:0,eta:28};
+ S.plotted=false;S.computed=false;
+ toast('TEMPORAL TRANSIT ENGAGED');
+ addlog('Asterion entered temporal transit toward '+d.real+'.');
+ go('nav');refresh();save()
+}
+function travelTick(){
+ if(!S.travel)return;
+ let rate=S.powerMode==='drive'?9:S.powerMode==='systems'?5:7;
+ S.travel.progress=Math.min(100,S.travel.progress+rate);
+ S.travel.eta=Math.max(0,S.travel.eta-2);
+ S.heat=Math.max(8,S.heat-1);
+ if(Math.random()<.18)spawnTraffic();
+ if(Math.random()<.07 && S.heat>70){damageRandom();toast('WARNING · thermal stress damaged a module.')}
+ if(S.travel.progress>=100){
+   let d=def(S.travel.id);S.location='APPROACHING '+d.real;S.localContact=S.travel.id;S.localStage=1;S.docked=false;S.mins+=7;S.explorationData+=1;S.travel=null;
+   toast('TRANSIT COMPLETE · CLOSE-RANGE CONTACT');addlog('Asterion entered local space around '+d.real+'.');go('local')
+ }
+}
+function approach(){if(!S.localContact){toast('No local contact. Execute an intercept first.');return}if(S.localStage>=2){toast('Already in close approach.');return}S.localStage=2;S.power=Math.max(0,S.power-2);S.mins+=3;toast('APPROACH RANGE · 500 KM');addlog('Closed to approach range.');refresh();save()}
+function hail(){if(!S.localContact){toast('No local contact.');return}let d=def(S.localContact);if(S.localContact==='X00')toast('No reply. A second voice repeats your own hail backward.');else toast('HAIL RESPONSE · '+d.real+' acknowledges Asterion.');S.mins+=1;refresh()}
+function dock(){if(!S.localContact){toast('No local contact.');return}if(S.localStage<2){toast('Approach to close range first.');return}S.localStage=3;S.docked=true;S.mins+=4;S.location='DOCKED · '+def(S.localContact).real;toast('DOCK / LAND COMPLETE');if(['T01','T03'].includes(S.localContact))addlog('Station services link established.');addlog('Docked/landed at '+def(S.localContact).real+'.');refresh();save()}
+function investigate(){if(!S.localContact){toast('No local contact.');return}if(!S.docked){toast('Dock or land before investigating.');return}let id=S.localContact,d=def(id);if(S.missionDone[id]){toast('Local objective already completed.');return}S.missionDone[id]=true;S.mins+=8;S.power=Math.min(100,S.power+5);S.stab=Math.min(100,S.stab+3);if(id==='X00')S.emiss=Math.max(0,S.emiss-25);S.heat=Math.max(5,S.heat-15);toast('LOCAL OBJECTIVE COMPLETE');addlog('Completed local operation: '+d.mission);if(S.activeMission)completeMission();refresh();save()}
+function depart(){if(!S.localContact){toast('Already in deep space.');return}S.location='DEEP SPACE';S.localStage=0;S.localContact=null;S.docked=false;S.mins+=3;toast('Returned to long-range operations.');addlog('Departed local space.');go('sensors');refresh();save()}
 function charge(){if(S.fuel<4){toast('Insufficient fuel reserve.');return}S.fuel-=4;S.power=Math.min(100,S.power+20);toast('Drive capacitor charged.');refresh();save()}
 function stabilize(){if(S.power<6){toast('Insufficient power.');return}S.power-=6;S.stab=Math.min(100,S.stab+12);toast('Temporal hull stabilized.');refresh();save()}
-function goal(){if(!S.passive)return['sensors','Begin with PASSIVE SWEEP. It costs no power and does not reveal your position.'];if(!S.selected)return['sensors','Tap one of the contacts on the sensor scope.'];let q=get(S.selected);if(q.res<70)return['sensors','Analyze the selected contact with different sensors or use FOCUS SCAN until identification reaches 70%.'];if(!q.modes.includes('radio'))return['sensors','Run RADIO analysis to intercept the contact carrier.'];if(!S.computed)return['nav','Contact identified. COMPUTE INTERCEPT in Navigation.'];if(!S.plotted)return['nav','PLOT COURSE to arm the chrono trajectory.'];return['nav','Trajectory ready. EXECUTE INTERCEPT.']}
-function renderScope(){let sc=$('scope');sc.querySelectorAll('.contact').forEach(x=>x.remove());S.contacts.forEach(q=>{let d=def(q.id),b=document.createElement('button');b.className='contact '+(S.selected===q.id?'sel ':'')+(q.id==='X00'?'hostile':'');b.style.left=`calc(${d.x}% - 12px)`;b.style.top=`calc(${d.y}% - 12px)`;b.textContent=q.id.replace('T0','');b.onclick=()=>select(q.id);sc.appendChild(b)})}
-function renderTracks(){$('trackList').innerHTML=S.contacts.length?S.contacts.map(q=>{let d=def(q.id);return`<div class="contactCard ${S.selected===q.id?'on':''}" onclick="select('${q.id}')"><b>${q.res>=70?d.real:d.name}</b><br><small>${d.range} · resolution ${q.res}% · ${q.tracked?'TRACKED':'untracked'}</small><div class="bar"><i style="width:${q.res}%"></i></div></div>`}).join(''):'<div class="contactCard"><b>No contacts.</b><br><small>Run a passive sweep.</small></div>'}
-function renderWave(){let s='';for(let i=0;i<34;i++)s+=`<i class="wave" style="height:${8+Math.random()*44}px;animation-delay:${Math.random()}s"></i>`;$('wave').innerHTML=s}
-function refresh(){
- $('power').textContent=Math.round(S.power)+'%';$('fuel').textContent=Math.round(S.fuel)+'%';$('stab').textContent=Math.round(S.stab)+'%';$('count').textContent=S.contacts.length;$('time').textContent=fmt(S.mins);$('loc').textContent=S.location;$('pbar').style.width=S.power+'%';$('sbar').style.width=S.stab+'%';$('guide').textContent=goal()[1];
- renderScope();renderTracks();renderWave();let q=S.selected?get(S.selected):null,d=q?def(q.id):null;$('commsRead').textContent=q&&q.modes.includes('radio')?`CARRIER DETECTED · ${q.id}\\n${d.radio}\\nTune and FILTER / DECODE for message content.`:'NO CARRIER LOCK\\nSelect a contact and perform RADIO analysis.';
- $('navRead').textContent=q?`CONTACT: ${q.res>=70?d.real:q.id}\\nPOSITION: ${q.tracked?'TRACK LOCK':'SENSOR ESTIMATE'}\\nEPOCH: ${q.res>=70?d.epoch:'UNCERTAIN'}\\nTEMPORAL VELOCITY: ${q.res>=70?(q.id==='T02'?'-0.0041 y/s':q.id==='T03'?'+0.0037 y/s':'0.0008 y/s'):'UNRESOLVED'}\\nCAUSAL STABILITY: ${Math.round(S.stab)}%\\nSOLUTION: ${S.plotted?'ARMED':S.computed?'COMPUTED':'NOT COMPUTED'}`:'NO INTERCEPT SOLUTION';$('log').textContent=S.log.join('\\n')
+function silent(){
+ if(S.shadow){toast('Asterion is already running dark.');return}
+ S.shadow=true;S.shadowTicks=0;
+ S.emiss=Math.max(0,S.emiss-25);S.heat=Math.max(5,S.heat-15);
+ S.computed=false;S.plotted=false;
+ document.body.classList.add('shadow');
+ toast('GOING DARK · active emissions cut.');
+ addlog('Asterion entered full shadow mode.');
+ refresh();save()
 }
-function next(){let g=goal();go(g[0]);toast(g[1])}function save(){localStorage.setItem('asterionSensor1',JSON.stringify(S))}function load(){let x=localStorage.getItem('asterionSensor1');if(x){S=Object.assign(JSON.parse(JSON.stringify(BASE)),JSON.parse(x));refresh();toast('Sensor voyage restored.')}}function resetGame(){localStorage.removeItem('asterionSensor1');S=JSON.parse(JSON.stringify(BASE));refresh();go('sensors');toast('Fresh sensor mission initialized.')}
-refresh();
+function breakSilence(){
+ if(!S.shadow){toast('Active systems are already online.');return}
+ S.shadow=false;S.shadowTicks=0;
+ document.body.classList.remove('shadow');
+ toast('BREAKING SILENCE · active systems restored.');
+ addlog('Asterion broke shadow mode and restored active systems.');
+ refresh();save()
+}
+function goal(){if(S.travel)return['nav','Temporal transit underway. Watch ETA, heat and traffic until arrival.'];if(S.shadow)return['sensors','Asterion is hidden in SHADOW MODE. Stay dark and let emissions fall, or BREAK SILENCE when you are ready to act.'];if(S.localContact){if(S.localStage<2)return['local','You arrived in local space. APPROACH the contact.'];if(!S.docked)return['local','You are in close approach. HAIL or DOCK / LAND.'];if(!S.missionDone[S.localContact])return['local','Docked. INVESTIGATE the local objective.'];return['local','Local objective complete. DEPART when ready.']}if(!S.passive)return['sensors','Begin with PASSIVE SWEEP. It costs no power and does not reveal your position.'];if(!S.selected)return['sensors','Tap one of the moving contacts on the sensor scope.'];let q=get(S.selected);if(q.res<70)return['sensors','Analyze the selected contact with different sensors or use FOCUS SCAN until identification reaches 70%.'];if(!q.modes.includes('radio'))return['sensors','Run RADIO analysis to intercept the contact carrier.'];if(!S.computed)return['nav','Contact identified. COMPUTE INTERCEPT in Navigation.'];if(!S.plotted)return['nav','PLOT COURSE to arm the chrono trajectory.'];return['nav','Trajectory ready. EXECUTE INTERCEPT.']}
+function deduction(){if(!S.selected)return 'SHIP COMPUTER: No deduction available.';let q=get(S.selected),d=def(q.id),parts=[];if(q.modes.includes('life'))parts.push('biological');if(q.modes.includes('radio'))parts.push('carrier');if(q.modes.includes('chrono'))parts.push('epoch');if(q.modes.includes('optical'))parts.push('structure');if(q.res>=70)return `SHIP COMPUTER: ${parts.join(' + ')||'sensor'} evidence matches ${d.real} · ${d.epoch} with ${Math.min(99,q.res)}% confidence.`;if(parts.length>=2)return `SHIP COMPUTER: ${parts.join(' + ')} evidence suggests a Verona-linked contact. Identification confidence ${q.res}%.`;return 'SHIP COMPUTER: More sensor types required for a useful deduction.'}
+function renderScope(){let sc=$('scope');sc.querySelectorAll('.contact').forEach(x=>x.remove());S.contacts.forEach(q=>{let d=def(q.id);q.x=(q.x??d.x)+d.dx;q.y=(q.y??d.y)+d.dy;if(q.x<12||q.x>88)d.dx*=-1;if(q.y<12||q.y>88)d.dy*=-1;let b=document.createElement('button');b.className='contact '+(S.selected===q.id?'sel ':'')+(q.id==='X00'?'hostile ':'')+(S.localContact===q.id?'dock':'');b.style.left=`calc(${q.x}% - 12px)`;b.style.top=`calc(${q.y}% - 12px)`;b.textContent=q.id.replace('T0','');b.onclick=()=>select(q.id);sc.appendChild(b)})}
+function renderTracks(){$('trackList').innerHTML=S.contacts.length?S.contacts.map(q=>{let d=def(q.id);return`<div class="contactCard ${S.selected===q.id?'on':''}" onclick="select('${q.id}')"><b>${q.res>=70?d.real:d.name}</b><br><small>${d.range} · resolution ${q.res}% · ${q.tracked?'TRACKED':'moving solution'}</small><div class="bar"><i style="width:${q.res}%"></i></div></div>`}).join(''):'<div class="contactCard"><b>No contacts.</b><br><small>Run a passive sweep.</small></div>'}
+function renderWave(){let s='';for(let i=0;i<34;i++)s+=`<i class="wave" style="height:${8+Math.random()*44}px;animation-delay:${Math.random()}s"></i>`;$('wave').innerHTML=s}
+function renderLocal(){if(!S.localContact){$('localArt').textContent='🌌';$('localRead').textContent='NO LOCAL CONTACT.\\nExecute an intercept to enter approach range.';$('localChoices').innerHTML='';return}let d=def(S.localContact);$('localArt').textContent=d.art;let range=S.localStage===1?'20,000 KM':S.localStage===2?'500 KM':'DOCKED';$('localRead').textContent=`${d.real.toUpperCase()} · ${d.epoch}\\nRANGE: ${range}\\n${d.local}\\n\\nOBJECTIVE: ${d.mission}\\nSTATUS: ${S.missionDone[S.localContact]?'COMPLETE':'ACTIVE'}`;$('localChoices').innerHTML=S.missionDone[S.localContact]?'<div class="choice"><b>MISSION RESULT</b><br><small>Local evidence has been added to Asterion’s causal record. You may depart and continue scanning.</small></div>':''}
+function renderElite(){
+ ensureMissions();
+ $('powerMode').textContent=S.powerMode.toUpperCase();
+ $('heatbar').style.width=S.heat+'%';
+ $('heatText').textContent=Math.round(S.heat)+'% · '+(S.heat>75?'critical':S.heat>45?'elevated':'nominal');
+ $('trafficText').textContent=S.shadow?'Passive listening only.':(S.traffic.length?S.traffic.map(t=>t.name+' · '+t.range+' · '+t.state).join('\n'):'No local traffic.');
+ $('travelbar').style.width=(S.travel?S.travel.progress:0)+'%';
+ $('travelText').textContent=S.travel?`${Math.round(S.travel.progress)}% complete · ETA ${S.travel.eta}s`:'No active transit.';
+ $('moduleBox').innerHTML=Object.entries(S.modules).map(([k,v])=>`<div class="module ${v<60?'dmg':''}"><b>${k}</b><div class="bar ${v<60?'red':''}"><i style="width:${v}%"></i></div><small>${v}% integrity</small></div>`).join('');
+ $('cargoBox').innerHTML=`<div class="contactCard"><b>${cargoCount()} / ${S.cargoCap} tons</b><br><small>${Object.entries(S.cargo).map(([k,v])=>k+' ×'+v).join(' · ')||'Hold empty'}</small></div><div class="contactCard"><b>${S.credits} CR</b><br><small>Available credits</small></div>`;
+ $('missionBoard').innerHTML=S.missions.map(m=>`<div class="missionRow"><div><b>${m.name}</b><br><small>${m.text}</small></div><div>${m.pay} CR</div><button class="btn ${m.accepted?'g':''}" onclick="acceptMission('${m.id}')" ${m.done?'disabled':''}>${m.done?'DONE':m.accepted?'ACTIVE':'ACCEPT'}</button></div>`).join('');
+ $('sectorMap').innerHTML=S.systemsDiscovered.map((n,i)=>`<div class="mapRow"><div><b>${n}</b><br><small>${i===0?'Primary temporal operations zone':'Discovered sector'}</small></div><div>DATA ${S.explorationData}</div><div>${S.location.includes(n)?'HERE':'KNOWN'}</div></div>`).join('');
+ $('repBox').innerHTML=Object.entries(S.rep).map(([k,v])=>`<span class="pill">${k} REP ${v}</span>`).join('');
+ let stationOK=S.docked&&['T01','T03'].includes(S.localContact);
+ $('stationRead').textContent=stationOK?`DOCKED: ${def(S.localContact).real}\nSERVICES ONLINE\nCREDITS: ${S.credits}\nCARGO: ${cargoCount()}/${S.cargoCap}`:'NO STATION DOCKED.\nDock at Verona Clinic or Verona Temporal Archive to access station services.';
+ $('marketBox').innerHTML=stationOK?'<div class="station"><b>LOCAL MARKET</b><br><small>Medical Supplies · 80 CR · available now</small></div>':'';
+}
+function refresh(){
+ document.body.classList.toggle('shadow',!!S.shadow);
+ $('power').textContent=Math.round(S.power)+'%';$('fuel').textContent=Math.round(S.fuel)+'%';$('stab').textContent=Math.round(S.stab)+'%';$('emiss').textContent=Math.round(S.emiss)+'%';$('time').textContent=fmt(S.mins);$('loc').textContent=S.location;$('pbar').style.width=S.power+'%';$('sbar').style.width=S.stab+'%';$('ebar').style.width=S.emiss+'%';renderElite();$('guide').textContent=goal()[1];$('deduction').textContent=S.shadow?'SHIP COMPUTER: PASSIVE LISTENING ONLY · Asterion is masked against active detection.':deduction();renderScope();renderTracks();renderWave();renderLocal();let q=S.selected?get(S.selected):null,d=q?def(q.id):null;$('commsRead').textContent=q&&q.modes.includes('radio')?`CARRIER DETECTED · ${q.id}\\n${d.radio}\\nTune and FILTER / DECODE for message content.`:'NO CARRIER LOCK\\nSelect a contact and perform RADIO analysis.';$('navRead').textContent=q?`CONTACT: ${q.res>=70?d.real:q.id}\\nPOSITION: ${q.tracked?'TRACK LOCK':'MOVING SENSOR ESTIMATE'}\\nEPOCH: ${q.res>=70?d.epoch:'UNCERTAIN'}\\nTEMPORAL VELOCITY: ${q.res>=70?(q.id==='T02'?'-0.0041 y/s':q.id==='T03'?'+0.0037 y/s':'0.0008 y/s'):'UNRESOLVED'}\\nCAUSAL STABILITY: ${Math.round(S.stab)}%\\nSOLUTION: ${S.plotted?'ARMED':S.computed?'COMPUTED':'NOT COMPUTED'}`:'NO INTERCEPT SOLUTION';$('log').textContent=S.log.join('\\n')}
+function next(){let g=goal();go(g[0]);toast(g[1])}function save(){localStorage.setItem('asterionEliteConsole1',JSON.stringify(S))}function load(){let x=localStorage.getItem('asterionEliteConsole1');if(x){S=Object.assign(JSON.parse(JSON.stringify(BASE)),JSON.parse(x));refresh();toast('Enhanced radar voyage restored.')}}function resetGame(){localStorage.removeItem('asterionEliteConsole1');S=JSON.parse(JSON.stringify(BASE));refresh();go('sensors');toast('Fresh sensor mission initialized.')}
+setInterval(()=>{
+ if(S.contacts.length&&!S.localContact&&!S.travel)renderScope();
+ if(S.shadow)dangerTick();
+ if(S.travel)travelTick();
+ if(!S.shadow&&!S.travel){S.heat=Math.max(8,S.heat-1);spawnTraffic()}
+ refresh();save();
+},1100);ensureMissions();refresh();
 </script></body></html>
